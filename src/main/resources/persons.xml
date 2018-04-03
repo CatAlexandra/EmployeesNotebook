@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persons>
+    <managers>
+        <manager>
+            <first_name>Ivan</first_name>
+            <last_name>Ivanov</last_name>
+            <birth_year>1980</birth_year>
+            <phone_number>88005553535</phone_number>
+            <department>IT</department>
+        </manager>
+    </managers>
+    <employees>
+        <employee>
+            <first_name>Sidor</first_name>
+            <last_name>Sidorov</last_name>
+            <birth_year>1980</birth_year>
+            <phone_number>88005553536</phone_number>
+            <manager>Ivan Ivanov</manager>
+        </employee>
+    </employees>
+</persons>
