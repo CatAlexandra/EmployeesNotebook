@@ -4,6 +4,7 @@ import com.palyaeva.entity.Employee;
 import com.palyaeva.entity.Manager;
 import com.palyaeva.entity.Person;
 import com.palyaeva.validation.PersonValidator;
+import com.palyaeva.validation.ValidationException;
 import org.jdom2.DocType;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -15,6 +16,9 @@ import org.jdom2.output.XMLOutputter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +46,7 @@ public class PersonXMLSerializer implements PersonSerializer {
         this.validator = validator;
     }
 
+    // saves given list of persons to xml file specified by file path
     public void serialize(List<Person> persons, String filePath) {
         Element rootElement = new Element(ROOT_ELEMENT_NAME);
 
@@ -64,12 +69,24 @@ public class PersonXMLSerializer implements PersonSerializer {
         Document document = new Document(rootElement);
         document.setDocType(new DocType("xml"));
 
+        createDirectories(filePath);
+
         try (FileOutputStream stream = new FileOutputStream(filePath)) {
             XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
             xmlOutputter.output(document, stream);
         } catch (IOException exception) {
             System.err.println("Problem occurred when saving file: " + exception.getMessage());
             // logging exception :)
+        }
+    }
+
+    private void createDirectories(String filePath) {
+        String path = filePath.substring(0, filePath.lastIndexOf(File.separatorChar));
+        Path directoryPath = Paths.get(path);
+        try {
+            Files.createDirectories(directoryPath).toFile();
+        } catch (IOException exception) {
+            System.err.println("Problem occurred with creating directory: " + exception.getMessage());
         }
     }
 
@@ -99,6 +116,7 @@ public class PersonXMLSerializer implements PersonSerializer {
         return employeeElement;
     }
 
+    // loads persons from xml file (specified by file path) into list
     public List<Person> deserialize(String filePath) {
         SAXBuilder builder = new SAXBuilder();
         File xmlFile = new File(filePath);
@@ -108,11 +126,11 @@ public class PersonXMLSerializer implements PersonSerializer {
                 Document document = builder.build(xmlFile);
                 Element rootNode = document.getRootElement();
                 if (rootNode != null) {
-                    Element employeesElement = rootNode.getChild(EMPLOYEE_CONTAINER_ELEMENT_NAME);
-                    personList.addAll(deserializeEmployees(employeesElement));
-
                     Element managersElement = rootNode.getChild(MANAGER_CONTAINER_ELEMENT_NAME);
                     personList.addAll(deserializeManagers(managersElement));
+
+                    Element employeesElement = rootNode.getChild(EMPLOYEE_CONTAINER_ELEMENT_NAME);
+                    personList.addAll(deserializeEmployees(employeesElement, personList));
                 }
             } catch (IOException exception) {
                 System.err.println("Problem occurred while reading file: " + exception.getMessage());
@@ -121,30 +139,33 @@ public class PersonXMLSerializer implements PersonSerializer {
                 System.err.println("Bad xml file: " + exception.getMessage());
                 // logging exception :)
             }
-        } else {
-            System.err.println("Data file doesn't exist");
         }
         return personList;
     }
 
-    private List<Employee> deserializeEmployees(Element employeesElement) {
+    private List<Employee> deserializeEmployees(Element employeesElement, List<Person> personList) {
         List<Employee> employeesList = new ArrayList<>();
 
         if (employeesElement != null) {
             List<Element> employeesElementChildren = employeesElement.getChildren();
             for (Element child : employeesElementChildren) {
                 try {
-                    String firstName = child.getChildText(FIRST_NAME);
-                    String lastName = child.getChildText(LAST_NAME);
-                    int birthYear = Integer.parseInt(child.getChildText(BIRTH_YEAR));
-                    String phoneNumber = child.getChildText(PHONE_NUMBER);
-                    String manager = child.getChildText(MANAGER);
+                    String firstName = child.getChildText(FIRST_NAME).trim();
+                    String lastName = child.getChildText(LAST_NAME).trim();
+                    String birthYear = child.getChildText(BIRTH_YEAR).trim();
+                    String phoneNumber = child.getChildText(PHONE_NUMBER).trim();
+                    String manager = child.getChildText(MANAGER).trim();
 
-                    // TODO: add validation
-                    Employee employee = new Employee(firstName, lastName, birthYear, phoneNumber, manager);
+                    validator.validateName(firstName, "First name");
+                    validator.validateName(lastName, "Last name");
+                    validator.validateBirthYear(birthYear);
+                    validator.validatePhoneNumber(phoneNumber);
+                    validator.validateManager(manager, personList);
+
+                    Employee employee = new Employee(firstName, lastName, Integer.parseInt(birthYear), phoneNumber, manager);
                     employeesList.add(employee);
-                } catch (RuntimeException exception) {
-                    // TODO: change exception type
+                } catch (ValidationException exception) {
+                    System.err.println(exception.getMessage());
                 }
             }
         }
@@ -159,17 +180,22 @@ public class PersonXMLSerializer implements PersonSerializer {
             List<Element> managersElementChildren = managersElement.getChildren();
             for (Element child : managersElementChildren) {
                 try {
-                    String firstName = child.getChildText(FIRST_NAME);
-                    String lastName = child.getChildText(LAST_NAME);
-                    int birthYear = Integer.parseInt(child.getChildText(BIRTH_YEAR));
-                    String phoneNumber = child.getChildText(PHONE_NUMBER);
-                    String department = child.getChildText(DEPARTMENT);
+                    String firstName = child.getChildText(FIRST_NAME).trim();
+                    String lastName = child.getChildText(LAST_NAME).trim();
+                    String birthYear = child.getChildText(BIRTH_YEAR).trim();
+                    String phoneNumber = child.getChildText(PHONE_NUMBER).trim();
+                    String department = child.getChildText(DEPARTMENT).trim();
 
-                    // TODO: add validation
-                    Manager manager = new Manager(firstName, lastName, birthYear, phoneNumber, department);
+                    validator.validateName(firstName, "First name");
+                    validator.validateName(lastName, "Last name");
+                    validator.validateBirthYear(birthYear);
+                    validator.validatePhoneNumber(phoneNumber);
+                    validator.validateDepartment(department);
+
+                    Manager manager = new Manager(firstName, lastName, Integer.parseInt(birthYear), phoneNumber, department);
                     managersList.add(manager);
-                } catch (RuntimeException exception) {
-                    // TODO: change exception type
+                } catch (ValidationException exception) {
+                    System.err.println(exception.getMessage());
                 }
             }
         }
