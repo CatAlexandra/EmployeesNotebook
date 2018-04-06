@@ -1,5 +1,9 @@
 package com.palyaeva.entity;
 
+/**
+ * Abstract class for common attributes of managers and employees.
+ * Parent of classes {@link Manager} and {@link Employee}
+ */
 public abstract class Person {
 
     private final String firstName;

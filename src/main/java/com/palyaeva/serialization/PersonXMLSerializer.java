@@ -24,6 +24,9 @@ import java.util.List;
 
 public class PersonXMLSerializer implements PersonSerializer {
 
+    /**
+     * Values of constants are tag names in xml file
+     */
     private static final String ROOT_ELEMENT_NAME = "persons";
 
     private static final String MANAGER_CONTAINER_ELEMENT_NAME = "managers";
@@ -46,7 +49,13 @@ public class PersonXMLSerializer implements PersonSerializer {
         this.validator = validator;
     }
 
-    // saves given list of persons to xml file specified by file path
+    /**
+     * Saves given list of persons to xml file specified by file path.
+     * Used when user finishes working with the application and closes it
+     *
+     * @param persons  list of Persons
+     * @param filePath path to data file
+     */
     public void serialize(List<Person> persons, String filePath) {
         Element rootElement = new Element(ROOT_ELEMENT_NAME);
 
@@ -116,7 +125,13 @@ public class PersonXMLSerializer implements PersonSerializer {
         return employeeElement;
     }
 
-    // loads persons from xml file (specified by file path) into list
+    /**
+     * Loads persons from xml file into list.
+     * Used when user starts working with application.
+     *
+     * @param filePath path to data file
+     * @return List of Persons received from file
+     */
     public List<Person> deserialize(String filePath) {
         SAXBuilder builder = new SAXBuilder();
         File xmlFile = new File(filePath);
@@ -169,7 +184,6 @@ public class PersonXMLSerializer implements PersonSerializer {
                 }
             }
         }
-
         return employeesList;
     }
 
@@ -199,7 +213,6 @@ public class PersonXMLSerializer implements PersonSerializer {
                 }
             }
         }
-
         return managersList;
     }
 }

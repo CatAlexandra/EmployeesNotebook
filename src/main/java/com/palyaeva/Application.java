@@ -7,6 +7,12 @@ import com.palyaeva.validation.PersonValidatorImpl;
 
 import java.io.File;
 
+/**
+ * Main class for running application.
+ * Application is a notebook for storing information
+ * about employees and managers and make operations with it.
+ * @see NotebookSystem
+ */
 public class Application {
 
     private static final String FILE_PATH = System.getProperty("user.dir") +
@@ -15,7 +21,8 @@ public class Application {
             File.separator +
             "persons.xml";
 
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws InterruptedException {
         PersonValidator validator = new PersonValidatorImpl();
         PersonSerializer serializer = new PersonXMLSerializer(validator);
         NotebookSystem notebookSystem = new NotebookSystem(FILE_PATH, serializer, validator);

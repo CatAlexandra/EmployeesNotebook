@@ -1,5 +1,9 @@
 package com.palyaeva.entity;
 
+/**
+ * Class for storing managers information.
+ * Has field {@link Manager#department} in addition to Person's fields
+ */
 public class Manager extends Person {
 
     private final String department;

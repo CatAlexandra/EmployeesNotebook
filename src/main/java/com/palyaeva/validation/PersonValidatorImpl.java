@@ -11,11 +11,15 @@ public class PersonValidatorImpl implements PersonValidator {
         if (name == null) {
             throw new ValidationException("No such child. " + nameType + " is NULL");
         } else {
+
             boolean isValid = name.chars().allMatch(Character::isLetter) &&
-                    name.length() >= 2 && name.length() <= 15;
+                    name.length() >= 2 && name.length() <= 11;
 
             if (!isValid) {
-                throw new ValidationException(nameType + " should not contain non-letter symbols");
+                throw new ValidationException(nameType +
+                        " should not contain non-letter symbols," +
+                        " and should be longer than 1 " +
+                        " and shorter than 12 letters");
             }
         }
     }
@@ -60,7 +64,8 @@ public class PersonValidatorImpl implements PersonValidator {
             // fullName[0] - first name
             // fullName[1] - last name
             if (fullName.length != 2) {
-                throw new ValidationException("Invalid manager full name - should contain first name and last name.");
+                throw new ValidationException("Invalid manager full name - " +
+                        "should contain first name and last name of existing manager.");
             } else {
                 String firstName = fullName[0];
                 String lastName = fullName[1];
@@ -74,7 +79,7 @@ public class PersonValidatorImpl implements PersonValidator {
                     }
                 }
                 if (!isFound) {
-                    throw new ValidationException("Manager not found");
+                    throw new ValidationException("Manager not found!");
                 }
             }
         }
