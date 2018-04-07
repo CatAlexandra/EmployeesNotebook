@@ -5,7 +5,19 @@ import com.palyaeva.entity.Person;
 
 import java.util.List;
 
+/**
+ * Default implementation of {@link PersonValidator}
+ */
 public class PersonValidatorImpl implements PersonValidator {
+    /**
+     * Validates first name and last name
+     * Valid name is longer then 1 letter and shorter than 12 letters
+     * and contains only letters
+     *
+     * @param name     first or last name of person
+     * @param nameType is "first name" or "last name"
+     * @throws ValidationException if name is incorrect
+     */
     @Override
     public void validateName(String name, String nameType) throws ValidationException {
         if (name == null) {
@@ -24,6 +36,12 @@ public class PersonValidatorImpl implements PersonValidator {
         }
     }
 
+    /**
+     * Checks that year is >= 1900 and <= 2002
+     *
+     * @param birthYear year
+     * @throws ValidationException if year is incorrect
+     */
     @Override
     public void validateBirthYear(String birthYear) throws ValidationException {
         if (birthYear == null) {
@@ -40,12 +58,18 @@ public class PersonValidatorImpl implements PersonValidator {
         }
     }
 
+    /**
+     * Checks only russian phone numbers
+     *
+     * @param number russian phone number -
+     *               begins with +7/7/8 and contains 10 numbers
+     * @throws ValidationException if number is incorrect
+     */
     @Override
     public void validatePhoneNumber(String number) throws ValidationException {
         if (number == null) {
             throw new ValidationException("No such child. Phone number is NULL");
         } else {
-            // checks only russian phone numbers
             boolean isValid = number.matches("^((\\+7|7|8)([0-9]){10})$");
             if (!isValid) {
                 throw new ValidationException("Invalid phone number");
@@ -53,6 +77,13 @@ public class PersonValidatorImpl implements PersonValidator {
         }
     }
 
+    /**
+     * Checks if manager with given full name exists
+     *
+     * @param managerName manager's first and last name
+     * @param persons     list of all workers - managers and employees
+     * @throws ValidationException if manager is not found
+     */
     @Override
     public void validateManager(String managerName, List<Person> persons) throws ValidationException {
         if (managerName == null) {
@@ -61,8 +92,6 @@ public class PersonValidatorImpl implements PersonValidator {
             boolean isFound = false;
 
             String[] fullName = managerName.split("\\s+");
-            // fullName[0] - first name
-            // fullName[1] - last name
             if (fullName.length != 2) {
                 throw new ValidationException("Invalid manager full name - " +
                         "should contain first name and last name of existing manager.");
@@ -85,6 +114,12 @@ public class PersonValidatorImpl implements PersonValidator {
         }
     }
 
+    /**
+     * Checks that department name contains only letters and spaces
+     *
+     * @param department manager's department
+     * @throws ValidationException if department name is incorrect
+     */
     @Override
     public void validateDepartment(String department) throws ValidationException {
         if (department == null) {

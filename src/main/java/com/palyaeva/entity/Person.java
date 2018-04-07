@@ -1,8 +1,7 @@
 package com.palyaeva.entity;
 
 /**
- * Abstract class for common attributes of managers and employees.
- * Parent of classes {@link Manager} and {@link Employee}
+ * Abstract class for common attributes of workers
  */
 public abstract class Person {
 

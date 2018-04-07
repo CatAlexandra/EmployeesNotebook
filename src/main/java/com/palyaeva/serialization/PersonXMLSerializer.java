@@ -24,7 +24,7 @@ import java.util.List;
 
 public class PersonXMLSerializer implements PersonSerializer {
 
-    /**
+    /*
      * Values of constants are tag names in xml file
      */
     private static final String ROOT_ELEMENT_NAME = "persons";
@@ -51,7 +51,6 @@ public class PersonXMLSerializer implements PersonSerializer {
 
     /**
      * Saves given list of persons to xml file specified by file path.
-     * Used when user finishes working with the application and closes it
      *
      * @param persons  list of Persons
      * @param filePath path to data file
@@ -89,6 +88,13 @@ public class PersonXMLSerializer implements PersonSerializer {
         }
     }
 
+    /**
+     * Creates new directory for data file if it doesn't exist.
+     * (In our case creates directory "data")
+     * And does nothing if directory exists.
+     *
+     * @param filePath full path to data file
+     */
     private void createDirectories(String filePath) {
         String path = filePath.substring(0, filePath.lastIndexOf(File.separatorChar));
         Path directoryPath = Paths.get(path);
@@ -127,7 +133,6 @@ public class PersonXMLSerializer implements PersonSerializer {
 
     /**
      * Loads persons from xml file into list.
-     * Used when user starts working with application.
      *
      * @param filePath path to data file
      * @return List of Persons received from file
@@ -177,7 +182,8 @@ public class PersonXMLSerializer implements PersonSerializer {
                     validator.validatePhoneNumber(phoneNumber);
                     validator.validateManager(manager, personList);
 
-                    Employee employee = new Employee(firstName, lastName, Integer.parseInt(birthYear), phoneNumber, manager);
+                    Employee employee = new Employee(firstName, lastName, Integer.parseInt(birthYear),
+                            phoneNumber, manager);
                     employeesList.add(employee);
                 } catch (ValidationException exception) {
                     System.err.println(exception.getMessage());
@@ -206,7 +212,8 @@ public class PersonXMLSerializer implements PersonSerializer {
                     validator.validatePhoneNumber(phoneNumber);
                     validator.validateDepartment(department);
 
-                    Manager manager = new Manager(firstName, lastName, Integer.parseInt(birthYear), phoneNumber, department);
+                    Manager manager = new Manager(firstName, lastName, Integer.parseInt(birthYear),
+                            phoneNumber, department);
                     managersList.add(manager);
                 } catch (ValidationException exception) {
                     System.err.println(exception.getMessage());
